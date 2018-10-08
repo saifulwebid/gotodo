@@ -2,6 +2,8 @@ package database
 
 import (
 	"errors"
+	"fmt"
+	"os"
 
 	"github.com/saifulwebid/gotodo"
 
@@ -26,11 +28,11 @@ type service struct {
 func NewService() (Service, error) {
 	config := mysql.NewConfig()
 
-	config.User = "gotodo"
-	config.Passwd = "gotodo"
+	config.User = os.Getenv("GOTODO_DB_USER")
+	config.Passwd = os.Getenv("GOTODO_DB_PASS")
 	config.Net = "tcp"
-	config.Addr = "127.0.0.1:3306"
-	config.DBName = "gotodo"
+	config.Addr = fmt.Sprint(os.Getenv("GOTODO_DB_HOST"), ":", os.Getenv("GOTODO_DB_PORT"))
+	config.DBName = os.Getenv("GOTODO_DB_NAME")
 
 	db, err := gorm.Open("mysql", config.FormatDSN())
 	if err != nil {
