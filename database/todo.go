@@ -8,10 +8,10 @@ type Todo struct {
 	ID          int    `gorm:"PRIMARY_KEY"`
 	Title       string `gorm:"NOT NULL"`
 	Description *string
-	Done        bool
+	Done        *bool `gorm:"NOT NULL"`
 }
 
-func FromEntity(todo *gotodo.Todo) Todo {
+func FromEntity(todo gotodo.Todo) Todo {
 	var done bool
 	if todo.Status() == gotodo.Finished {
 		done = true
@@ -23,13 +23,13 @@ func FromEntity(todo *gotodo.Todo) Todo {
 		ID:          todo.ID(),
 		Title:       todo.Title,
 		Description: todo.Description,
-		Done:        done,
+		Done:        &done,
 	}
 }
 
 func (t Todo) AsEntity() gotodo.Todo {
 	var status gotodo.Status
-	if t.Done {
+	if *t.Done {
 		status = gotodo.Finished
 	} else {
 		status = gotodo.Pending
