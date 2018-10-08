@@ -56,10 +56,10 @@ func (s *service) Get(id int) (*gotodo.Todo, error) {
 	return &entity, nil
 }
 
-func (s *service) GetAll() []gotodo.Todo {
+func (s *service) getEntities(populate func(*[]Todo)) []gotodo.Todo {
 	todos := []Todo{}
 
-	s.db.Find(&todos)
+	populate(&todos)
 
 	ret := []gotodo.Todo{}
 	for _, el := range todos {
@@ -69,24 +69,18 @@ func (s *service) GetAll() []gotodo.Todo {
 	return ret
 }
 
+func (s *service) GetAll() []gotodo.Todo {
+	return s.getEntities(func(todos *[]Todo) {
+		s.db.Find(&todos)
+	})
+}
+
 func (s *service) GetWhere(status gotodo.Status) []gotodo.Todo {
-	var done bool
-	if status == gotodo.Finished {
-		done = true
-	} else {
-		done = false
-	}
+	done := (status == gotodo.Finished)
 
-	todos := []Todo{}
-
-	s.db.Where(&Todo{Done: &done}).Find(&todos)
-
-	ret := []gotodo.Todo{}
-	for _, el := range todos {
-		ret = append(ret, el.AsEntity())
-	}
-
-	return ret
+	return s.getEntities(func(todos *[]Todo) {
+		s.db.Where(&Todo{Done: &done}).Find(&todos)
+	})
 }
 
 func (s *service) Insert(title string, description *string, done bool) (*gotodo.Todo, error) {
