@@ -1,0 +1,15 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "gotodo"
+      MYSQL_USER: "gotodo"
+      MYSQL_PASSWORD: "gotodo"
+    volumes:
+      - mysql:/var/lib/mysql
+volumes:
+  mysql:
