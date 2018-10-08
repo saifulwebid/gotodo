@@ -39,6 +39,8 @@ func NewService() (Service, error) {
 		return nil, err
 	}
 
+	db.AutoMigrate(&Todo{})
+
 	return &service{db: db}, nil
 }
 
