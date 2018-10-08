@@ -26,11 +26,11 @@ type service struct {
 func NewService() (Service, error) {
 	config := mysql.NewConfig()
 
-	config.User = "gem"
-	config.Passwd = "gem"
+	config.User = "gotodo"
+	config.Passwd = "gotodo"
 	config.Net = "tcp"
 	config.Addr = "127.0.0.1:3306"
-	config.DBName = "ob_saiful_golang"
+	config.DBName = "gotodo"
 
 	db, err := gorm.Open("mysql", config.FormatDSN())
 	if err != nil {
