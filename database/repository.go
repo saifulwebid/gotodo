@@ -43,15 +43,15 @@ func (s *repository) Get(id int) (*gotodo.Todo, error) {
 	}
 
 	entity := todo.AsEntity()
-	return &entity, nil
+	return entity, nil
 }
 
-func (s *repository) getEntities(populate func(*[]Todo)) []gotodo.Todo {
+func (s *repository) getEntities(populate func(*[]Todo)) []*gotodo.Todo {
 	todos := []Todo{}
 
 	populate(&todos)
 
-	ret := []gotodo.Todo{}
+	ret := []*gotodo.Todo{}
 	for _, el := range todos {
 		ret = append(ret, el.AsEntity())
 	}
@@ -59,13 +59,13 @@ func (s *repository) getEntities(populate func(*[]Todo)) []gotodo.Todo {
 	return ret
 }
 
-func (s *repository) GetAll() []gotodo.Todo {
+func (s *repository) GetAll() []*gotodo.Todo {
 	return s.getEntities(func(todos *[]Todo) {
 		s.db.Find(&todos)
 	})
 }
 
-func (s *repository) GetWhere(status gotodo.Status) []gotodo.Todo {
+func (s *repository) GetWhere(status gotodo.Status) []*gotodo.Todo {
 	done := (status == gotodo.Finished)
 
 	return s.getEntities(func(todos *[]Todo) {
@@ -86,10 +86,10 @@ func (s *repository) Insert(title string, description *string, done bool) (*goto
 	}
 
 	entity := todo.AsEntity()
-	return &entity, nil
+	return entity, nil
 }
 
-func (s *repository) Update(entityTodo gotodo.Todo) error {
+func (s *repository) Update(entityTodo *gotodo.Todo) error {
 	todo := FromEntity(entityTodo)
 
 	res := s.db.Save(todo)
@@ -100,7 +100,7 @@ func (s *repository) Update(entityTodo gotodo.Todo) error {
 	return nil
 }
 
-func (s *repository) Delete(entityTodo gotodo.Todo) error {
+func (s *repository) Delete(entityTodo *gotodo.Todo) error {
 	if entityTodo.ID() == 0 {
 		return errors.New("Invalid ID to delete")
 	}
