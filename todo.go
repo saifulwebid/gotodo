@@ -11,14 +11,12 @@ type Todo struct {
 
 // NewTodo will return a new todo based on the arguments.
 func NewTodo(id int, title string, description *string, status Status) Todo {
-	todo := Todo{
+	return Todo{
 		id:          id,
 		Title:       title,
 		Description: description,
 		status:      status,
 	}
-
-	return todo
 }
 
 // ID returns the todo's ID in the system.
