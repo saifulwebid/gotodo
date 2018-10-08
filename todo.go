@@ -30,12 +30,12 @@ func (t Todo) Status() Status {
 }
 
 // MarkAsDone will mark a todo as done.
-func (t Todo) MarkAsDone() {
+func (t Todo) markAsDone() {
 	t.status = Finished
 }
 
 // IsValid returns true if the todo is valid; false otherwise.
-func (t Todo) IsValid() bool {
+func (t Todo) isValid() bool {
 	if t.Title == "" {
 		return false
 	}
