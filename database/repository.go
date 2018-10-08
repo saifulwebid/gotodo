@@ -11,7 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type Service interface {
+type Repository interface {
 	Get(id int) (*gotodo.Todo, error)
 	GetAll() []gotodo.Todo
 	GetWhere(status gotodo.Status) []gotodo.Todo
@@ -21,11 +21,11 @@ type Service interface {
 	DeleteWhere(status gotodo.Status)
 }
 
-type service struct {
+type repository struct {
 	db *gorm.DB
 }
 
-func NewService() (Service, error) {
+func NewRepository() (Repository, error) {
 	config := mysql.NewConfig()
 
 	config.User = os.Getenv("GOTODO_DB_USER")
@@ -41,10 +41,10 @@ func NewService() (Service, error) {
 
 	db.AutoMigrate(&Todo{})
 
-	return &service{db: db}, nil
+	return &repository{db: db}, nil
 }
 
-func (s *service) Get(id int) (*gotodo.Todo, error) {
+func (s *repository) Get(id int) (*gotodo.Todo, error) {
 	todo := Todo{}
 
 	res := s.db.First(&todo)
@@ -56,7 +56,7 @@ func (s *service) Get(id int) (*gotodo.Todo, error) {
 	return &entity, nil
 }
 
-func (s *service) getEntities(populate func(*[]Todo)) []gotodo.Todo {
+func (s *repository) getEntities(populate func(*[]Todo)) []gotodo.Todo {
 	todos := []Todo{}
 
 	populate(&todos)
@@ -69,13 +69,13 @@ func (s *service) getEntities(populate func(*[]Todo)) []gotodo.Todo {
 	return ret
 }
 
-func (s *service) GetAll() []gotodo.Todo {
+func (s *repository) GetAll() []gotodo.Todo {
 	return s.getEntities(func(todos *[]Todo) {
 		s.db.Find(&todos)
 	})
 }
 
-func (s *service) GetWhere(status gotodo.Status) []gotodo.Todo {
+func (s *repository) GetWhere(status gotodo.Status) []gotodo.Todo {
 	done := (status == gotodo.Finished)
 
 	return s.getEntities(func(todos *[]Todo) {
@@ -83,7 +83,7 @@ func (s *service) GetWhere(status gotodo.Status) []gotodo.Todo {
 	})
 }
 
-func (s *service) Insert(title string, description *string, done bool) (*gotodo.Todo, error) {
+func (s *repository) Insert(title string, description *string, done bool) (*gotodo.Todo, error) {
 	todo := Todo{
 		Title:       title,
 		Description: description,
@@ -99,7 +99,7 @@ func (s *service) Insert(title string, description *string, done bool) (*gotodo.
 	return &entity, nil
 }
 
-func (s *service) Update(entityTodo gotodo.Todo) error {
+func (s *repository) Update(entityTodo gotodo.Todo) error {
 	todo := FromEntity(entityTodo)
 
 	res := s.db.Save(todo)
@@ -110,7 +110,7 @@ func (s *service) Update(entityTodo gotodo.Todo) error {
 	return nil
 }
 
-func (s *service) Delete(entityTodo gotodo.Todo) error {
+func (s *repository) Delete(entityTodo gotodo.Todo) error {
 	if entityTodo.ID() == 0 {
 		return errors.New("Invalid ID to delete")
 	}
@@ -124,7 +124,7 @@ func (s *service) Delete(entityTodo gotodo.Todo) error {
 	return nil
 }
 
-func (s *service) DeleteWhere(status gotodo.Status) {
+func (s *repository) DeleteWhere(status gotodo.Status) {
 	done := (status == gotodo.Finished)
 	filter := Todo{Done: &done}
 
