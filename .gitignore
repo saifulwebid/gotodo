@@ -13,3 +13,6 @@
 
 # vendor related
 vendor/*/
+
+# Environment file
+.env
