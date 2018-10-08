@@ -11,21 +11,11 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type Repository interface {
-	Get(id int) (*gotodo.Todo, error)
-	GetAll() []gotodo.Todo
-	GetWhere(status gotodo.Status) []gotodo.Todo
-	Insert(title string, description *string, done bool) (*gotodo.Todo, error)
-	Update(entityTodo gotodo.Todo) error
-	Delete(entityTodo gotodo.Todo) error
-	DeleteWhere(status gotodo.Status)
-}
-
 type repository struct {
 	db *gorm.DB
 }
 
-func NewRepository() (Repository, error) {
+func NewRepository() (gotodo.Repository, error) {
 	config := mysql.NewConfig()
 
 	config.User = os.Getenv("GOTODO_DB_USER")
