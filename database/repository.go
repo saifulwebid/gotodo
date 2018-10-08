@@ -42,7 +42,7 @@ func (s *repository) Get(id int) (*gotodo.Todo, error) {
 		return nil, res.Error
 	}
 
-	entity := todo.AsEntity()
+	entity := todo.asEntity()
 	return entity, nil
 }
 
@@ -53,7 +53,7 @@ func (s *repository) getEntities(populate func(*[]Todo)) []*gotodo.Todo {
 
 	ret := []*gotodo.Todo{}
 	for _, el := range todos {
-		ret = append(ret, el.AsEntity())
+		ret = append(ret, el.asEntity())
 	}
 
 	return ret
@@ -85,12 +85,12 @@ func (s *repository) Insert(title string, description *string, done bool) (*goto
 		return nil, res.Error
 	}
 
-	entity := todo.AsEntity()
+	entity := todo.asEntity()
 	return entity, nil
 }
 
 func (s *repository) Update(entityTodo *gotodo.Todo) error {
-	todo := FromEntity(entityTodo)
+	todo := fromEntity(entityTodo)
 
 	res := s.db.Save(todo)
 	if res.Error != nil {
@@ -104,7 +104,7 @@ func (s *repository) Delete(entityTodo *gotodo.Todo) error {
 	if entityTodo.ID() == 0 {
 		return errors.New("Invalid ID to delete")
 	}
-	todo := FromEntity(entityTodo)
+	todo := fromEntity(entityTodo)
 
 	res := s.db.Delete(&todo)
 	if res.Error != nil {
