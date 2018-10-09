@@ -31,7 +31,7 @@ func NewRepository() (gotodo.Repository, error) {
 		return nil, err
 	}
 
-	db.AutoMigrate(&Todo{})
+	db.AutoMigrate(&gotodo.Todo{})
 
 	return &repository{db: db}, nil
 }
@@ -39,66 +39,53 @@ func NewRepository() (gotodo.Repository, error) {
 // Get will return a Todo with supplied ID from the database, or return an error
 // if a database error occured.
 func (s *repository) Get(id int) (*gotodo.Todo, error) {
-	todo := Todo{}
+	todo := &gotodo.Todo{}
 
 	res := s.db.First(&todo)
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
-	entity := todo.asEntity()
-	return entity, nil
+	return todo, nil
 }
 
-func (s *repository) getEntities(populate func(*[]Todo)) []*gotodo.Todo {
-	todos := []Todo{}
+func (s *repository) getEntities(populate func(*[]*gotodo.Todo)) []*gotodo.Todo {
+	todos := []*gotodo.Todo{}
 
 	populate(&todos)
 
-	ret := []*gotodo.Todo{}
-	for _, el := range todos {
-		ret = append(ret, el.asEntity())
-	}
-
-	return ret
+	return todos
 }
 
 // GetAll will return all Todos in the database.
 func (s *repository) GetAll() []*gotodo.Todo {
-	return s.getEntities(func(todos *[]Todo) {
-		s.db.Find(&todos)
+	return s.getEntities(func(todos *[]*gotodo.Todo) {
+		s.db.Find(todos)
 	})
 }
 
-// GetWhere will return all Todos with matching status.
-func (s *repository) GetWhere(status gotodo.Status) []*gotodo.Todo {
-	done := (status == gotodo.Finished)
-
-	return s.getEntities(func(todos *[]Todo) {
-		s.db.Where(&Todo{Done: &done}).Find(&todos)
+// GetWhereDone will return all Todos with matching status.
+func (s *repository) GetWhereDone(done bool) []*gotodo.Todo {
+	return s.getEntities(func(todos *[]*gotodo.Todo) {
+		s.db.Where("done = ?", done).Find(todos)
 	})
 }
 
 // Insert will insert a Todo to the database and return the created Todo from
 // the database in gotodo.Todo format, or return an error if a database error
 // occured.
-func (s *repository) Insert(entityTodo *gotodo.Todo) (*gotodo.Todo, error) {
-	todo := fromEntity(entityTodo)
-
-	res := s.db.Create(&todo)
+func (s *repository) Insert(todo *gotodo.Todo) (*gotodo.Todo, error) {
+	res := s.db.Create(todo)
 	if res.Error != nil {
 		return nil, res.Error
 	}
 
-	entity := todo.asEntity()
-	return entity, nil
+	return todo, nil
 }
 
 // Update will update the todo in the database, and return an error if a
 // database error occured.
-func (s *repository) Update(entityTodo *gotodo.Todo) error {
-	todo := fromEntity(entityTodo)
-
+func (s *repository) Update(todo *gotodo.Todo) error {
 	res := s.db.Save(todo)
 	if res.Error != nil {
 		return res.Error
@@ -109,11 +96,10 @@ func (s *repository) Update(entityTodo *gotodo.Todo) error {
 
 // Delete will delete the todo in the database, and return an error if a
 // database error occured.
-func (s *repository) Delete(entityTodo *gotodo.Todo) error {
-	if entityTodo.ID() == 0 {
+func (s *repository) Delete(todo *gotodo.Todo) error {
+	if todo.ID == 0 {
 		return errors.New("Invalid ID to delete")
 	}
-	todo := fromEntity(entityTodo)
 
 	res := s.db.Delete(&todo)
 	if res.Error != nil {
@@ -123,10 +109,7 @@ func (s *repository) Delete(entityTodo *gotodo.Todo) error {
 	return nil
 }
 
-// DeleteWhere will delete all todos with matching status.
-func (s *repository) DeleteWhere(status gotodo.Status) {
-	done := (status == gotodo.Finished)
-	filter := Todo{Done: &done}
-
-	s.db.Delete(filter)
+// DeleteWhereDone will delete all todos with matching status.
+func (s *repository) DeleteWhereDone(done bool) {
+	s.db.Where("done = ?", done).Find(gotodo.Todo{})
 }
