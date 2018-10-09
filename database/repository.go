@@ -49,26 +49,22 @@ func (s *repository) Get(id int) (*gotodo.Todo, error) {
 	return todo, nil
 }
 
-func (s *repository) getEntities(populate func(*[]*gotodo.Todo)) []*gotodo.Todo {
+// GetAll will return all Todos in the database.
+func (s *repository) GetAll() []*gotodo.Todo {
 	todos := []*gotodo.Todo{}
 
-	populate(&todos)
+	s.db.Find(&todos)
 
 	return todos
 }
 
-// GetAll will return all Todos in the database.
-func (s *repository) GetAll() []*gotodo.Todo {
-	return s.getEntities(func(todos *[]*gotodo.Todo) {
-		s.db.Find(todos)
-	})
-}
-
 // GetWhereDone will return all Todos with matching status.
 func (s *repository) GetWhereDone(done bool) []*gotodo.Todo {
-	return s.getEntities(func(todos *[]*gotodo.Todo) {
-		s.db.Where("done = ?", done).Find(todos)
-	})
+	todos := []*gotodo.Todo{}
+
+	s.db.Where("done = ?", done).Find(&todos)
+
+	return todos
 }
 
 // Insert will insert a Todo to the database and return the created Todo from
