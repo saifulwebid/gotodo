@@ -15,6 +15,8 @@ type repository struct {
 	db *gorm.DB
 }
 
+// NewRepository will return an implementation of a gotodo.Repository that
+// connected to a MySQL database. It will return an error otherwise.
 func NewRepository() (gotodo.Repository, error) {
 	config := mysql.NewConfig()
 
@@ -34,6 +36,8 @@ func NewRepository() (gotodo.Repository, error) {
 	return &repository{db: db}, nil
 }
 
+// Get will return a Todo with supplied ID from the database, or return an error
+// if a database error occured.
 func (s *repository) Get(id int) (*gotodo.Todo, error) {
 	todo := Todo{}
 
@@ -59,12 +63,14 @@ func (s *repository) getEntities(populate func(*[]Todo)) []*gotodo.Todo {
 	return ret
 }
 
+// GetAll will return all Todos in the database.
 func (s *repository) GetAll() []*gotodo.Todo {
 	return s.getEntities(func(todos *[]Todo) {
 		s.db.Find(&todos)
 	})
 }
 
+// GetWhere will return all Todos with matching status.
 func (s *repository) GetWhere(status gotodo.Status) []*gotodo.Todo {
 	done := (status == gotodo.Finished)
 
@@ -73,6 +79,9 @@ func (s *repository) GetWhere(status gotodo.Status) []*gotodo.Todo {
 	})
 }
 
+// Insert will insert a Todo to the database and return the created Todo from
+// the database in gotodo.Todo format, or return an error if a database error
+// occured.
 func (s *repository) Insert(entityTodo *gotodo.Todo) (*gotodo.Todo, error) {
 	todo := fromEntity(entityTodo)
 
@@ -85,6 +94,8 @@ func (s *repository) Insert(entityTodo *gotodo.Todo) (*gotodo.Todo, error) {
 	return entity, nil
 }
 
+// Update will update the todo in the database, and return an error if a
+// database error occured.
 func (s *repository) Update(entityTodo *gotodo.Todo) error {
 	todo := fromEntity(entityTodo)
 
@@ -96,6 +107,8 @@ func (s *repository) Update(entityTodo *gotodo.Todo) error {
 	return nil
 }
 
+// Delete will delete the todo in the database, and return an error if a
+// database error occured.
 func (s *repository) Delete(entityTodo *gotodo.Todo) error {
 	if entityTodo.ID() == 0 {
 		return errors.New("Invalid ID to delete")
@@ -110,6 +123,7 @@ func (s *repository) Delete(entityTodo *gotodo.Todo) error {
 	return nil
 }
 
+// DeleteWhere will delete all todos with matching status.
 func (s *repository) DeleteWhere(status gotodo.Status) {
 	done := (status == gotodo.Finished)
 	filter := Todo{Done: &done}
