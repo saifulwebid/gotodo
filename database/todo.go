@@ -12,17 +12,19 @@ type Todo struct {
 }
 
 func fromEntity(todo *gotodo.Todo) Todo {
-	var done bool
-	if todo.Status() == gotodo.Finished {
-		done = true
+	done := (todo.Status() == gotodo.Finished)
+
+	var desc *string
+	if todo.Description == "" {
+		desc = nil
 	} else {
-		done = false
+		desc = &todo.Description
 	}
 
 	return Todo{
 		ID:          todo.ID(),
 		Title:       todo.Title,
-		Description: todo.Description,
+		Description: desc,
 		Done:        &done,
 	}
 }
@@ -35,10 +37,17 @@ func (t Todo) asEntity() *gotodo.Todo {
 		status = gotodo.Pending
 	}
 
+	var desc string
+	if t.Description == nil {
+		desc = ""
+	} else {
+		desc = *t.Description
+	}
+
 	return gotodo.NewTodo(
 		t.ID,
 		t.Title,
-		t.Description,
+		desc,
 		status,
 	)
 }
