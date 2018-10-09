@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestMarkAsDone(t *testing.T) {
+func TestTodoMarkAsDone(t *testing.T) {
 	todo := NewTodo(1, "Title", "Description", Pending)
 
 	t.Run("Pending => Finished", func(t *testing.T) {
