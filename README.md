@@ -70,11 +70,11 @@ service := gotodo.NewService(repo)
 ```go
 todo, err := service.Add("Buy battery", "Buy two AA batteries from Bukalapak")
 if err != nil {
-    # Todo is most likely invalid; a todo requires the title to be not an empty string
+    // Todo is most likely invalid; a todo requires the title to be not an empty string
     fmt.Fprintln(os.Stderr, err.Error())
 }
-# todo will contain a Todo object from database.
-# This todo is pending; it means that it is not done.
+// todo will contain a Todo object from database.
+// This todo is pending; it means that it is not done.
 ```
 
 ### Edit a pending todo
@@ -83,7 +83,7 @@ if err != nil {
 todo.Title = "Buy two batteries"
 err = service.Edit(todo)
 if err != nil {
-    # Todo is most likely invalid; a todo requires the title to be not an empty string
+    // Todo is most likely invalid; a todo requires the title to be not an empty string
     fmt.Fprintln(os.Stderr, err.Error())
 }
 ```
@@ -99,7 +99,7 @@ service.MarkAsDone(todo)
 ```go
 todo, err = service.Get(1)
 if err != nil {
-    # A Todo with ID = 1 is not found.
+    // A Todo with ID = 1 is not found.
     fmt.Fprintln(os.Stderr, err.Error())
 }
 ```
@@ -124,11 +124,11 @@ todos = service.GetFinished()
 
 ### Delete a pending todo
 
-```
+```go
 error = service.Delete(todo)
 if err != nil {
-    # That Todo is finished already (and should be deleted using
-    # service.DeleteFinished() method).
+    // That Todo is finished already (and should be deleted using
+    // service.DeleteFinished() method).
     fmt.Fprintln(os.Stderr, err.Error())
 }
 ```
