@@ -115,17 +115,43 @@ func TestMarkAsDone(t *testing.T) {
 func TestDelete(t *testing.T) {
 	service := NewService(createRepo())
 
-	todo, err := service.Get(1)
-	if err != nil {
-		t.FailNow()
-	}
+	t.Run("delete pending todo", func(t *testing.T) {
+		todosCount := len(service.GetAll())
 
-	service.Delete(todo)
+		todo, err := service.Add("Test pending", "")
+		if err != nil {
+			t.Fatal("cannot create todo")
+		}
 
-	_, err = service.Get(1)
-	if err == nil {
-		t.FailNow()
-	}
+		err = service.Delete(todo)
+		if err != nil {
+			t.FailNow()
+		}
+
+		if len(service.GetAll()) != todosCount {
+			t.FailNow()
+		}
+	})
+
+	t.Run("delete finished todo", func(t *testing.T) {
+		todosCount := len(service.GetAll())
+
+		todo, err := service.Add("Test finished", "")
+		if err != nil {
+			t.FailNow()
+		}
+
+		service.MarkAsDone(todo)
+
+		err = service.Delete(todo)
+		if err == nil {
+			t.FailNow()
+		}
+
+		if len(service.GetAll()) == todosCount {
+			t.FailNow()
+		}
+	})
 }
 
 func TestDeleteFinished(t *testing.T) {
