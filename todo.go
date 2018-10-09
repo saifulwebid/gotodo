@@ -10,9 +10,5 @@ type Todo struct {
 
 // IsValid returns true if the todo is valid; false otherwise.
 func (t *Todo) isValid() bool {
-	if t.Title == "" {
-		return false
-	}
-
-	return true
+	return t.Title != ""
 }
