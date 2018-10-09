@@ -1,5 +1,9 @@
 package gotodo
 
+import (
+	"errors"
+)
+
 // Service will implement this library's use cases.
 type Service interface {
 	Get(id int) (*Todo, error)
@@ -40,10 +44,19 @@ func (s *service) GetFinished() []*Todo {
 }
 
 func (s *service) Add(title string, description string) (*Todo, error) {
-	return s.repo.Insert(title, description, false)
+	todo := NewTodo(0, title, description, Pending)
+	if !todo.isValid() {
+		return nil, errors.New("Todo is invalid")
+	}
+
+	return s.repo.Insert(todo)
 }
 
 func (s *service) Edit(todo *Todo) error {
+	if !todo.isValid() {
+		return errors.New("Todo is invalid")
+	}
+
 	return s.repo.Update(todo)
 }
 

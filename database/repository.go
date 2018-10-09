@@ -73,12 +73,8 @@ func (s *repository) GetWhere(status gotodo.Status) []*gotodo.Todo {
 	})
 }
 
-func (s *repository) Insert(title string, description string, done bool) (*gotodo.Todo, error) {
-	todo := Todo{
-		Title:       title,
-		Description: &description,
-		Done:        &done,
-	}
+func (s *repository) Insert(entityTodo *gotodo.Todo) (*gotodo.Todo, error) {
+	todo := fromEntity(entityTodo)
 
 	res := s.db.Create(&todo)
 	if res.Error != nil {
