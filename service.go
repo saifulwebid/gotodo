@@ -6,7 +6,7 @@ type Service interface {
 	GetAll() []*Todo
 	GetPending() []*Todo
 	GetFinished() []*Todo
-	Add(title string, description *string) (*Todo, error)
+	Add(title string, description string) (*Todo, error)
 	Edit(todo *Todo) error
 	MarkAsDone(todo *Todo)
 	Delete(todo *Todo) error
@@ -39,7 +39,7 @@ func (s *service) GetFinished() []*Todo {
 	return s.repo.GetWhere(Finished)
 }
 
-func (s *service) Add(title string, description *string) (*Todo, error) {
+func (s *service) Add(title string, description string) (*Todo, error) {
 	return s.repo.Insert(title, description, false)
 }
 

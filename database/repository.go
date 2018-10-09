@@ -73,10 +73,10 @@ func (s *repository) GetWhere(status gotodo.Status) []*gotodo.Todo {
 	})
 }
 
-func (s *repository) Insert(title string, description *string, done bool) (*gotodo.Todo, error) {
+func (s *repository) Insert(title string, description string, done bool) (*gotodo.Todo, error) {
 	todo := Todo{
 		Title:       title,
-		Description: description,
+		Description: &description,
 		Done:        &done,
 	}
 

@@ -6,11 +6,11 @@ type Todo struct {
 	status Status
 
 	Title       string
-	Description *string
+	Description string
 }
 
 // NewTodo will return a new todo based on the arguments.
-func NewTodo(id int, title string, description *string, status Status) *Todo {
+func NewTodo(id int, title string, description string, status Status) *Todo {
 	return &Todo{
 		id:          id,
 		Title:       title,
