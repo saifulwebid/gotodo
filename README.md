@@ -129,7 +129,7 @@ todos = service.GetFinished()
 ### Delete a pending todo
 
 ```go
-error = service.Delete(todo)
+err = service.Delete(todo)
 if err != nil {
     // That Todo is finished already (and should be deleted using
     // service.DeleteFinished() method).
