@@ -41,7 +41,7 @@ A todo consists of:
 * ID (integer, required),
 * title (string, required),
 * description (string, optional),
-* status (enum, required, either `gotodo.Pending` or `gotodo.Finished`).
+* done (boolean, required, `true` if it is a finished todo, `false` otherwise).
 
 ## Usage
 
