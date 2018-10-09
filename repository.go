@@ -4,9 +4,9 @@ package gotodo
 type Repository interface {
 	Get(id int) (*Todo, error)
 	GetAll() []*Todo
-	GetWhere(status Status) []*Todo
-	Insert(entityTodo *Todo) (*Todo, error)
-	Update(entityTodo *Todo) error
-	Delete(entityTodo *Todo) error
-	DeleteWhere(status Status)
+	GetWhereDone(done bool) []*Todo
+	Insert(todo *Todo) (*Todo, error)
+	Update(todo *Todo) error
+	Delete(todo *Todo) error
+	DeleteWhereDone(done bool)
 }
