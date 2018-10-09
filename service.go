@@ -65,6 +65,10 @@ func (s *service) MarkAsDone(todo *Todo) {
 }
 
 func (s *service) Delete(todo *Todo) error {
+	if todo.status != Pending {
+		return errors.New("todo is already finished; delete using service.DeleteFinished()")
+	}
+
 	return s.repo.Delete(todo)
 }
 
