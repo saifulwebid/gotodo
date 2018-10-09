@@ -128,8 +128,7 @@ todos = service.GetFinished()
 error = service.Delete(todo)
 if err != nil {
     # That Todo is finished already (and should be deleted using
-    # service.DeleteFinished() method) or is already not present in the
-    # database.
+    # service.DeleteFinished() method).
     fmt.Fprintln(os.Stderr, err.Error())
 }
 ```
