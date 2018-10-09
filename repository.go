@@ -1,5 +1,6 @@
 package gotodo
 
+// Repository is an interface to store todos to a persistent storage.
 type Repository interface {
 	Get(id int) (*Todo, error)
 	GetAll() []*Todo
