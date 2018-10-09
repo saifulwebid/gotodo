@@ -91,7 +91,11 @@ if err != nil {
 ### Mark a pending todo as done
 
 ```go
-service.MarkAsDone(todo)
+err = service.MarkAsDone(todo)
+if err != nil {
+    // A database error has occured.
+    fmt.Fprintln(os.Stderr, err.Error())
+}
 ```
 
 ### Retrieve detail of a todo
