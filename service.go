@@ -42,24 +42,29 @@ func (s *service) GetAll() []*Todo {
 
 // GetPending will return a collection of all pending Todos in the repository.
 func (s *service) GetPending() []*Todo {
-	return s.repo.GetWhere(Pending)
+	return s.repo.GetWhereDone(false)
 }
 
 // GetFinished will return a collection of all finished Todos in the repository.
 func (s *service) GetFinished() []*Todo {
-	return s.repo.GetWhere(Finished)
+	return s.repo.GetWhereDone(true)
 }
 
 // Add will create a pending Todo with supplied title and description.
 // It will return a Todo created in the repository, or an error if the Todo
 // is invalid (it means that you have supplied an empty title).
 func (s *service) Add(title string, description string) (*Todo, error) {
-	todo := NewTodo(0, title, description, Pending)
+	todo := Todo{
+		Title:       title,
+		Description: description,
+		Done:        false,
+	}
+
 	if !todo.isValid() {
 		return nil, errors.New("Todo is invalid")
 	}
 
-	return s.repo.Insert(todo)
+	return s.repo.Insert(&todo)
 }
 
 // Edit will update the Todo in the repository with values supplied in the
@@ -75,14 +80,14 @@ func (s *service) Edit(todo *Todo) error {
 
 // MarkAsDone will mark the todo as done and update it in the repository.
 func (s *service) MarkAsDone(todo *Todo) error {
-	todo.markAsDone()
+	todo.Done = true
 
 	return s.repo.Update(todo)
 }
 
 // Delete will delete a Todo from the repository.
 func (s *service) Delete(todo *Todo) error {
-	if todo.status != Pending {
+	if todo.Done {
 		return errors.New("todo is already finished; delete using service.DeleteFinished()")
 	}
 
@@ -91,5 +96,5 @@ func (s *service) Delete(todo *Todo) error {
 
 // DeleteFinished will delete all finished Todos in the repository.
 func (s *service) DeleteFinished() {
-	s.repo.DeleteWhere(Finished)
+	s.repo.DeleteWhereDone(true)
 }

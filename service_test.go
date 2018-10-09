@@ -9,9 +9,9 @@ func createRepo() *mockRepo {
 	repo := mockRepo{1, map[int]*Todo{}}
 
 	/* Insert sample data */
-	repo.Insert(&Todo{Title: "Title 1", Description: "Description", status: Pending})
-	repo.Insert(&Todo{Title: "Title 2", Description: "Description", status: Finished})
-	repo.Insert(&Todo{Title: "Title 3", Description: "Description", status: Pending})
+	repo.Insert(&Todo{Title: "Title 1", Description: "Description", Done: false})
+	repo.Insert(&Todo{Title: "Title 2", Description: "Description", Done: true})
+	repo.Insert(&Todo{Title: "Title 3", Description: "Description", Done: false})
 
 	return &repo
 }
@@ -102,12 +102,12 @@ func TestMarkAsDone(t *testing.T) {
 	todo, _ := service.Get(1)
 	service.MarkAsDone(todo)
 
-	if todo.status != Finished {
+	if !todo.Done {
 		t.FailNow()
 	}
 
 	todo, _ = service.Get(1)
-	if todo.status != Finished {
+	if !todo.Done {
 		t.FailNow()
 	}
 }
@@ -175,7 +175,7 @@ type mockRepo struct {
 
 func (m *mockRepo) Get(id int) (*Todo, error) {
 	for _, todo := range m.storage {
-		if todo.id == id {
+		if todo.ID == id {
 			return todo, nil
 		}
 	}
@@ -193,11 +193,11 @@ func (m *mockRepo) GetAll() []*Todo {
 	return ret
 }
 
-func (m *mockRepo) GetWhere(status Status) []*Todo {
+func (m *mockRepo) GetWhereDone(done bool) []*Todo {
 	ret := []*Todo{}
 
 	for _, todo := range m.storage {
-		if todo.status == status {
+		if todo.Done == done {
 			ret = append(ret, todo)
 		}
 	}
@@ -205,36 +205,36 @@ func (m *mockRepo) GetWhere(status Status) []*Todo {
 	return ret
 }
 
-func (m *mockRepo) Insert(entityTodo *Todo) (*Todo, error) {
-	entityTodo.id = m.nextID
+func (m *mockRepo) Insert(todo *Todo) (*Todo, error) {
+	todo.ID = m.nextID
 	m.nextID++
 
-	m.storage[entityTodo.id] = entityTodo
+	m.storage[todo.ID] = todo
 
-	return entityTodo, nil
+	return todo, nil
 }
 
-func (m *mockRepo) Update(entityTodo *Todo) error {
-	if _, exists := m.storage[entityTodo.id]; !exists {
+func (m *mockRepo) Update(todo *Todo) error {
+	if _, exists := m.storage[todo.ID]; !exists {
 		return errors.New("todo not found")
 	}
 
-	m.storage[entityTodo.id].Title = entityTodo.Title
-	m.storage[entityTodo.id].Description = entityTodo.Description
-	m.storage[entityTodo.id].status = entityTodo.status
+	m.storage[todo.ID].Title = todo.Title
+	m.storage[todo.ID].Description = todo.Description
+	m.storage[todo.ID].Done = todo.Done
 
 	return nil
 }
 
-func (m *mockRepo) Delete(entityTodo *Todo) error {
-	delete(m.storage, entityTodo.id)
+func (m *mockRepo) Delete(todo *Todo) error {
+	delete(m.storage, todo.ID)
 
 	return nil
 }
 
-func (m *mockRepo) DeleteWhere(status Status) {
+func (m *mockRepo) DeleteWhereDone(done bool) {
 	for id, todo := range m.storage {
-		if todo.status == status {
+		if todo.Done == done {
 			delete(m.storage, id)
 		}
 	}
