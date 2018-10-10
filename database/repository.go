@@ -107,5 +107,5 @@ func (s *repository) Delete(todo *gotodo.Todo) error {
 
 // DeleteWhereDone will delete all todos with matching status.
 func (s *repository) DeleteWhereDone(done bool) {
-	s.db.Where("done = ?", done).Find(gotodo.Todo{})
+	s.db.Where("done = ?", done).Find(&gotodo.Todo{})
 }
