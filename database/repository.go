@@ -39,7 +39,7 @@ func NewRepository() (gotodo.Repository, error) {
 // Get will return a Todo with supplied ID from the database, or return an error
 // if a database error occured.
 func (s *repository) Get(id int) (*gotodo.Todo, error) {
-	todo := &gotodo.Todo{}
+	todo := &gotodo.Todo{ID: id}
 
 	res := s.db.First(&todo)
 	if res.Error != nil {
